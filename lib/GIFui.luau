@@ -337,11 +337,12 @@ function GIFui:CreateWindow(title)
 					Position        = UDim2.new(0, 14, 0, 33),
 					Size            = UDim2.new(0.65, -14, 0, 24),
 					Text            = desc,
-					TextScaled      = true,
+					TextWrapped     = true,
 					Font            = T.Font,
 					TextSize        = 12,
 					TextColor3      = T.TextDim,
 					TextXAlignment  = Enum.TextXAlignment.Left,
+					TextYAlignment  = Enum.TextYAlignment.Top,
 					BackgroundTransparency = 1,
 				})
 			end
@@ -406,11 +407,12 @@ function GIFui:CreateWindow(title)
 					Position        = UDim2.new(0, 14, 0, 33),
 					Size            = UDim2.new(0.7, -14, 0, 24),
 					Text            = desc,
-					TextScaled      = true,
+					TextWrapped     = true,
 					Font            = T.Font,
 					TextSize        = 12,
 					TextColor3      = T.TextDim,
 					TextXAlignment  = Enum.TextXAlignment.Left,
+					TextYAlignment  = Enum.TextYAlignment.Top,
 					BackgroundTransparency = 1,
 				})
 			end
