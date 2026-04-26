@@ -504,6 +504,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 
 	function Win:Destroy()
 		for _, c in pairs(self._conns) do c:Disconnect() end
+		warn("DESTROY")
 		if destroyCallback then destroyCallback() end
 		Shell:Destroy()
 	end
