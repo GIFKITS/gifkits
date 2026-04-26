@@ -238,19 +238,28 @@ function GIFui:CreateWindow(title)
 		}),
 	})
 
-	function Win:CreateTab(name)
+	function Win:CreateTab(title)
 		local Tab = { _elements = {} }
 
 		local TabBtn = New("TextButton", {
 			Parent          = Sidebar,
 			Size            = UDim2.new(1, 0, 0, 40),
 			BackgroundColor3 = T.BG,
-			Text            = name,
-			Font            = T.Font,
-			TextSize        = 15,
-			TextColor3      = T.TextDim,
+			TextTransparency = 1,
 			AutoButtonColor = false,
 		}, { Corner(5) })
+		
+		local TabTitle = New("TextLabel", {
+			Parent = TabBtn,
+			BackgroundTransparency = 1,
+			TextColor3 = T.TextDim,
+			Font = T.Font,
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.fromScale(0.5, 0),
+			Size = UDim2.fromScale(0.85, 1),
+			TextScaled = true,
+			Text = title,
+		})
 
 		local AccentBar = New("Frame", {
 			Parent          = TabBtn,
@@ -262,7 +271,7 @@ function GIFui:CreateWindow(title)
 
 		local function setActive(on)
 			Tween(TabBtn,    TWEEN_FAST, { BackgroundColor3 = on and T.Elevated or T.BG })
-			Tween(TabBtn,    TWEEN_FAST, { TextColor3       = on and T.Text     or T.TextDim })
+			Tween(TabTitle,    TWEEN_FAST, { TextColor3       = on and T.Text     or T.TextDim })
 			Tween(AccentBar, TWEEN_FAST, { BackgroundTransparency = on and 0 or 1 })
 		end
 
