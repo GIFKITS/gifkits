@@ -176,7 +176,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 		end
 	end)
 	TopBtn(Color3.fromRGB(220, 50, 50), "X", function()
-		Shell:Destroy()
+		Win:Destroy()
 	end)
 
 	MakeDraggable(TopBar, Shell)
@@ -504,7 +504,6 @@ function GIFui:CreateWindow(title, destroyCallback)
 
 	function Win:Destroy()
 		for _, c in pairs(self._conns) do c:Disconnect() end
-		warn("DESTROY")
 		if destroyCallback then destroyCallback() end
 		Shell:Destroy()
 	end
