@@ -83,8 +83,8 @@ local Root = New("ScreenGui", {
 	DisplayOrder    = 9e6,
 })
 
-function GIFui:CreateWindow(title)
-	local Win = { _tabs = {}, _activeTab = nil, _conns = {} }
+function GIFui:CreateWindow(title, destroyCallback)
+	local Win = { _tabs = {}, _activeTab = nil, _conns = {}}
 
 	local function Track(c) table.insert(Win._conns, c) end
 
@@ -504,6 +504,7 @@ function GIFui:CreateWindow(title)
 
 	function Win:Destroy()
 		for _, c in pairs(self._conns) do c:Disconnect() end
+		if destroyCallback then destroyCallback() end
 		Shell:Destroy()
 	end
 
