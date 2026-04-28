@@ -57,13 +57,16 @@ end
 local function MakeDraggable(handle, target)
 	local dragging, startMouse, startPos = false, nil, nil
 	handle.InputBegan:Connect(function(i)
-		if i.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-		dragging   = true
-		startMouse = InputSvc:GetMouseLocation()
-		startPos   = Vector2.new(target.Position.X.Scale, target.Position.Y.Scale)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+			dragging   = true
+			startMouse = InputSvc:GetMouseLocation()
+			startPos   = Vector2.new(target.Position.X.Scale, target.Position.Y.Scale)
+		end
 	end)
 	handle.InputEnded:Connect(function(i)
-		if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+		if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
+			dragging = false 
+		end
 	end)
 	RunSvc.Heartbeat:Connect(function()
 		if not dragging then return end
@@ -99,6 +102,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 	}, {
 		Corner(12),
 		New("UIAspectRatioConstraint", { AspectRatio = 1 }),
+		New("UISizeConstraint", { MinSize = Vector2.new(250, 250) }),
 	})
 
 	local TopBar = New("Frame", {
@@ -248,7 +252,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 			TextTransparency = 1,
 			AutoButtonColor = false,
 		}, { Corner(5) })
-		
+
 		local TabTitle = New("TextLabel", {
 			Parent = TabBtn,
 			BackgroundTransparency = 1,
