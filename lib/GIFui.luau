@@ -590,7 +590,8 @@ function GIFui:CreateWindow(title, destroyCallback)
 			local dragging = false
 			local function updateSlider(input)
 				local valPct = math.clamp((input.Position.X - TrackLine.AbsolutePosition.X) / TrackLine.AbsoluteSize.X, 0, 1)
-				local newVal = math.floor(min + ((max - min) * valPct) + 0.5)
+				local newVal = min + ((max - min) * valPct)
+				newVal = math.floor(newVal * 1000 + 0.5) / 1000
 				newVal = math.clamp(newVal, min, max)
 				if newVal ~= val then
 					val = newVal
@@ -622,7 +623,8 @@ function GIFui:CreateWindow(title, destroyCallback)
 			local slider = {}
 			function slider:Get() return val end
 			function slider:Set(v)
-				val = math.clamp(v, min, max)
+				val = math.floor(v * 1000 + 0.5) / 1000
+				val = math.clamp(val, min, max)
 				ValLabel.Text = tostring(val)
 				Tween(Fill, TWEEN_FAST, { Size = UDim2.new((val - min)/range, 0, 1, 0) })
 				if callback then callback(val) end
