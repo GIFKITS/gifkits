@@ -91,12 +91,12 @@ local function getLocker()
 	local closestLocker:BasePart
 	for _,prompt:ProximityPrompt in pairs(currentRooms:GetDescendants()) do
 		if not prompt:IsA("ProximityPrompt") or prompt.Name ~= "HidePrompt" then continue end
-		
+
 		local locker:Model = prompt.Parent
 		local base:BasePart = locker:FindFirstChild("Base")
 		local hiddenPlayer:ObjectValue = locker:FindFirstChild("HiddenPlayer")
 		if not base or not hiddenPlayer or hiddenPlayer.Value then continue end
-		
+
 		if not closestLocker then
 			closestLocker = base
 		else
@@ -120,20 +120,20 @@ end
 local function getGoal() : BasePart
 	local room:Model = currentRooms:FindFirstChild(tostring(latestRoom.Value))
 	if not room then return end
-	
+
 	currentAction = checkAction()
 	currentRoom = room
-	
+
 	if currentAction ~= "locker" and prevAction == "locker" then
 		camLock:FireServer()
 	end
-	
+
 	prevAction = currentAction
-	
+
 	if currentAction == "locker" then
 		return getLocker()
 	end
-	
+
 	local door1 = room:FindFirstChild("Door")
 	if not door1 then return end
 
@@ -150,9 +150,10 @@ local function completePath()
 		local locker:Model = currentGoal.Parent
 		local prompt:ProximityPrompt = locker:FindFirstChildOfClass("ProximityPrompt")
 		if not prompt then return end
-		
+
 		if a90.Visible then
 			repeat task.wait() until not a90.Visible
+			task.wait(.2)
 		end
 		firePrompt(prompt)
 	end
@@ -167,7 +168,7 @@ local function computePath()
 	local currentTime = os.clock()
 	if currentTime-lastComputed < 1 and prevGoal == currentGoal then return end
 	lastComputed = currentTime
-	
+
 	if prevGoal ~= currentGoal then
 		stopPath()
 	end
@@ -207,6 +208,7 @@ local window = GIFui:CreateWindow("Rooms Auto Walk V2")
 local mainTab = window:CreateTab("script")
 
 mainTab:CreateLabel("made by GIFKITS", Color3.new(1,1,1))
+mainTab:CreateLabel("If you have high ping, lower the speed boost to 6", Color3.new(1, 0.760784, 0.2))
 
 mainTab:CreateLabel("pathfinding")
 mainTab:CreateToggle("Auto Walk (Rooms)","complete the rooms automatically",false,function(value)
@@ -239,17 +241,18 @@ end))
 
 head:WaitForChild("PointLight"):AddTag("default")
 table.insert(window._conns, head.ChildAdded:Connect(function(child)
+	task.wait(.1)
 	if child:IsA("PointLight") and not child:HasTag("default") then child:Destroy() end
 end))
 
 table.insert(window._conns, player.CharacterAdded:Connect(updateCharacter))
 table.insert(window._conns, run.RenderStepped:Connect(function(deltaTime)
 	character:SetAttribute("SpeedBoost", tonumber(speedBoost))
-	
+
 	if fullbrightEnabled then
 		lighting.Ambient = Color3.new(1,1,1)
 	end
-	
+
 	if camLockObject and head then
 		cameraScript.Enabled = false
 		local targetCFrame = CFrame.new(head.CFrame.Position, camLockObject.Position)
