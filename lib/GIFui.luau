@@ -87,7 +87,7 @@ local Root = New("ScreenGui", {
 })
 
 function GIFui:CreateWindow(title, destroyCallback)
-	local Win = { _tabs = {}, _activeTab = nil, _conns = {}}
+	local Win = { _tabs = {}, _activeTab = nil, _conns = {}, _elementCount = 0 }
 
 	local function Track(c) table.insert(Win._conns, c) end
 
@@ -231,6 +231,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 		CanvasSize                = UDim2.new(0, 0, 0, 0),
 	}, {
 		New("UIListLayout", {
+			SortOrder           = Enum.SortOrder.LayoutOrder,
 			Padding             = UDim.new(0, 6),
 			HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		}),
@@ -309,10 +310,12 @@ function GIFui:CreateWindow(title, destroyCallback)
 		end
 
 		local function makeCard(h)
+			Win._elementCount = Win._elementCount + 1
 			local card = New("Frame", {
 				Parent          = OptionsPane,
 				Size            = UDim2.new(1, 0, 0, h or 64),
 				BackgroundColor3 = T.Elevated,
+				LayoutOrder     = Win._elementCount,
 				Visible         = Win._activeTab == Tab,
 			}, { Corner(10), Stroke(T.Border, 1) })
 			table.insert(Tab._elements, card)
@@ -487,6 +490,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 		end
 
 		function Tab:CreateLabel(text, color)
+			Win._elementCount = Win._elementCount + 1
 			local lbl = New("TextLabel", {
 				Parent          = OptionsPane,
 				Size            = UDim2.new(1, 0, 0, 24),
@@ -496,11 +500,134 @@ function GIFui:CreateWindow(title, destroyCallback)
 				TextSize        = 12,
 				TextColor3      = color or T.TextDim,
 				TextXAlignment  = Enum.TextXAlignment.Left,
+				LayoutOrder     = Win._elementCount,
 				Visible         = Win._activeTab == Tab,
 			}, {
 				New("UIPadding", { PaddingLeft = UDim.new(0, 8) }),
 			})
 			table.insert(Tab._elements, lbl)
+		end
+
+		function Tab:CreateSlider(label, desc, min, max, default, callback)
+			local card = makeCard(desc and 86 or 64)
+			local val = default or min
+			val = math.clamp(val, min, max)
+			local range = math.max(max - min, 0.001)
+
+			New("TextLabel", {
+				Parent          = card,
+				Text            = label,
+				Font            = T.FontBold,
+				TextSize        = 15,
+				TextColor3      = T.Text,
+				TextXAlignment  = Enum.TextXAlignment.Left,
+				BackgroundTransparency = 1,
+				AnchorPoint     = Vector2.new(0, 0),
+				Position        = UDim2.new(0, 14, 0, 10),
+				Size            = UDim2.new(0.65, -14, 0, 22),
+			})
+			if desc then
+				New("TextLabel", {
+					Parent          = card,
+					Position        = UDim2.new(0, 14, 0, 31),
+					Size            = UDim2.new(0.65, -14, 0, 24),
+					Text            = desc,
+					TextWrapped     = true,
+					Font            = T.Font,
+					TextSize        = 12,
+					TextColor3      = T.TextDim,
+					TextXAlignment  = Enum.TextXAlignment.Left,
+					TextYAlignment  = Enum.TextYAlignment.Top,
+					BackgroundTransparency = 1,
+				})
+			end
+
+			local ValLabel = New("TextLabel", {
+				Parent          = card,
+				AnchorPoint     = Vector2.new(1, 0),
+				Position        = UDim2.new(1, -14, 0, 10),
+				Size            = UDim2.new(0, 50, 0, 22),
+				Text            = tostring(val),
+				Font            = T.FontBold,
+				TextSize        = 14,
+				TextColor3      = T.Text,
+				TextXAlignment  = Enum.TextXAlignment.Right,
+				BackgroundTransparency = 1,
+			})
+
+			local TrackLine = New("Frame", {
+				Parent          = card,
+				Size            = UDim2.new(1, -28, 0, 6),
+				AnchorPoint     = Vector2.new(0.5, 1),
+				Position        = UDim2.new(0.5, 0, 1, -14),
+				BackgroundColor3 = T.Border,
+			}, { Corner(3) })
+
+			local Fill = New("Frame", {
+				Parent          = TrackLine,
+				Size            = UDim2.new((val - min)/range, 0, 1, 0),
+				BackgroundColor3 = T.Accent,
+			}, { Corner(3) })
+
+			local Knob = New("Frame", {
+				Parent          = Fill,
+				Size            = UDim2.new(0, 14, 0, 14),
+				AnchorPoint     = Vector2.new(0.5, 0.5),
+				Position        = UDim2.new(1, 0, 0.5, 0),
+				BackgroundColor3 = Color3.new(1,1,1),
+			}, { Corner(7) })
+
+			local Btn = New("TextButton", {
+				Parent          = TrackLine,
+				Size            = UDim2.new(1, 0, 1, 24),
+				AnchorPoint     = Vector2.new(0.5, 0.5),
+				Position        = UDim2.new(0.5, 0, 0.5, 0),
+				BackgroundTransparency = 1,
+				Text            = "",
+				ZIndex          = 2,
+			})
+
+			local dragging = false
+			local function updateSlider(input)
+				local valPct = math.clamp((input.Position.X - TrackLine.AbsolutePosition.X) / TrackLine.AbsoluteSize.X, 0, 1)
+				local newVal = math.floor(min + ((max - min) * valPct) + 0.5)
+				newVal = math.clamp(newVal, min, max)
+				if newVal ~= val then
+					val = newVal
+					ValLabel.Text = tostring(val)
+					Tween(Fill, TWEEN_FAST, { Size = UDim2.new((val - min)/range, 0, 1, 0) })
+					if callback then callback(val) end
+				end
+			end
+
+			Btn.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					dragging = true
+					updateSlider(input)
+				end
+			end)
+
+			Track(InputSvc.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					dragging = false
+				end
+			end))
+
+			Track(InputSvc.InputChanged:Connect(function(input)
+				if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+					updateSlider(input)
+				end
+			end))
+
+			local slider = {}
+			function slider:Get() return val end
+			function slider:Set(v)
+				val = math.clamp(v, min, max)
+				ValLabel.Text = tostring(val)
+				Tween(Fill, TWEEN_FAST, { Size = UDim2.new((val - min)/range, 0, 1, 0) })
+				if callback then callback(val) end
+			end
+			return slider
 		end
 
 		return Tab
