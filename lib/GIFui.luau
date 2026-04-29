@@ -547,7 +547,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 				AnchorPoint     = Vector2.new(1, 0),
 				Position        = UDim2.new(1, -14, 0, 10),
 				Size            = UDim2.new(0, 50, 0, 22),
-				Text            = tostring(val),
+				Text            = tostring(math.ceil(val)),
 				Font            = T.FontBold,
 				TextSize        = 14,
 				TextColor3      = T.Text,
@@ -595,7 +595,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 				newVal = math.clamp(newVal, min, max)
 				if newVal ~= val then
 					val = newVal
-					ValLabel.Text = tostring(val)
+					ValLabel.Text = tostring(math.ceil(val))
 					Tween(Fill, TWEEN_FAST, { Size = UDim2.new((val - min)/range, 0, 1, 0) })
 					if callback then callback(val) end
 				end
@@ -625,7 +625,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 			function slider:Set(v)
 				val = math.floor(v * 1000 + 0.5) / 1000
 				val = math.clamp(val, min, max)
-				ValLabel.Text = tostring(val)
+				ValLabel.Text = tostring(math.ceil(val))
 				Tween(Fill, TWEEN_FAST, { Size = UDim2.new((val - min)/range, 0, 1, 0) })
 				if callback then callback(val) end
 			end
