@@ -55,6 +55,7 @@ local function Pad(px)
 end
 
 local function MakeDraggable(handle, target)
+	handle.Active = true
 	local dragging, startMouse, startPos = false, nil, nil
 	handle.InputBegan:Connect(function(i)
 		if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
@@ -123,12 +124,14 @@ function GIFui:CreateWindow(title, destroyCallback)
 		Corner(12),
 		New("TextLabel", {
 			Text             = title or "GIFui",
+			TextScaled       = true,
 			Font             = T.FontBold,
 			TextSize         = 17,
 			TextColor3       = T.Text,
 			BackgroundTransparency = 1,
-			Size             = UDim2.new(1, -110, 1, 0),
-			Position         = UDim2.new(0, 16, 0, 0),
+			AnchorPoint      = Vector2.new(0, 0.5),
+			Size             = UDim2.new(1, -110, 0.35, 0),
+			Position         = UDim2.new(0, 16, 0.5, 0),
 			TextXAlignment   = Enum.TextXAlignment.Left,
 			ZIndex           = 4,
 		}),
@@ -259,10 +262,11 @@ function GIFui:CreateWindow(title, destroyCallback)
 			BackgroundTransparency = 1,
 			TextColor3 = T.TextDim,
 			Font = T.FontBold,
-			AnchorPoint = Vector2.new(0.5, 0.5),
-			Position = UDim2.fromScale(0.5, 0.5),
-			Size = UDim2.fromScale(0.85, 0.5),
+			AnchorPoint = Vector2.new(0, 0.5),
+			Position = UDim2.fromScale(0.1, 0.5),
+			Size = UDim2.fromScale(0.85, 0.25),
 			TextScaled = true,
+			SizeConstraint = Enum.SizeConstraint.RelativeXX,
 			Text = title,
 		})
 
@@ -328,15 +332,16 @@ function GIFui:CreateWindow(title, destroyCallback)
 
 			New("TextLabel", {
 				Parent          = card,
+				Position        = UDim2.new(0, 14, 0, 10),
+				Size            = UDim2.new(0.55, 0, 0, 20),
 				Text            = label,
+				TextWrapped     = true,
 				Font            = T.FontBold,
-				TextSize        = 15,
+				TextSize        = 14,
 				TextColor3      = T.Text,
 				TextXAlignment  = Enum.TextXAlignment.Left,
 				BackgroundTransparency = 1,
 				AnchorPoint     = Vector2.new(0, 0),
-				Position        = UDim2.new(0, 14, 0, desc and 9 or 0),
-				Size            = UDim2.new(0.65, -14, 0, desc and 24 or card.Size.Y.Offset),
 			})
 			if desc then
 				New("TextLabel", {
@@ -399,11 +404,12 @@ function GIFui:CreateWindow(title, destroyCallback)
 
 			New("TextLabel", {
 				Parent          = card,
-				Position        = UDim2.new(0, 14, 0, desc and 9 or 0),
-				Size            = UDim2.new(0.7, -14, 0, desc and 24 or card.Size.Y.Offset),
+				Position        = UDim2.new(0, 14, 0, 10),
+				Size            = UDim2.new(0.55, 0, 0, 20),
 				Text            = label,
+				TextWrapped     = true,
 				Font            = T.FontBold,
-				TextSize        = 15,
+				TextSize        = 14,
 				TextColor3      = T.Text,
 				TextXAlignment  = Enum.TextXAlignment.Left,
 				BackgroundTransparency = 1,
@@ -412,7 +418,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 				New("TextLabel", {
 					Parent          = card,
 					Position        = UDim2.new(0, 14, 0, 33),
-					Size            = UDim2.new(0.7, -14, 0, 24),
+					Size            = UDim2.new(0.65, -14, 0, 24),
 					Text            = desc,
 					TextWrapped     = true,
 					Font            = T.Font,
@@ -428,7 +434,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 				Parent          = card,
 				AnchorPoint     = Vector2.new(1, 0.5),
 				Position        = UDim2.new(1, -14, 0.5, 0),
-				Size            = UDim2.new(0, 84, 0, 34),
+				Size            = UDim2.new(0, 40, 0, 50),
 				BackgroundColor3 = T.Accent,
 				Text            = "Run",
 				Font            = T.FontBold,
@@ -454,10 +460,11 @@ function GIFui:CreateWindow(title, destroyCallback)
 			New("TextLabel", {
 				Parent          = card,
 				Position        = UDim2.new(0, 14, 0, 10),
-				Size            = UDim2.new(1, -28, 0, 22),
+				Size            = UDim2.new(0.55, 0, 0, 20),
 				Text            = label,
+				TextWrapped     = true,
 				Font            = T.FontBold,
-				TextSize        = 15,
+				TextSize        = 14,
 				TextColor3      = T.Text,
 				TextXAlignment  = Enum.TextXAlignment.Left,
 				BackgroundTransparency = 1,
@@ -471,8 +478,9 @@ function GIFui:CreateWindow(title, destroyCallback)
 				PlaceholderText     = placeholder or "Enter value...",
 				PlaceholderColor3   = T.TextDim,
 				Text                = "",
+				TextWrapped     = true,
 				Font                = T.Font,
-				TextSize            = 14,
+				TextSize            = 12,
 				TextColor3          = T.Text,
 				ClearTextOnFocus    = false,
 			}, { Corner(6), Stroke(T.Border, 1) })
@@ -496,6 +504,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 				Size            = UDim2.new(1, 0, 0, 24),
 				BackgroundTransparency = 1,
 				Text            = text or "",
+				TextWrapped     = true,
 				Font            = T.Font,
 				TextSize        = 12,
 				TextColor3      = color or T.TextDim,
@@ -516,15 +525,16 @@ function GIFui:CreateWindow(title, destroyCallback)
 
 			New("TextLabel", {
 				Parent          = card,
+				Position        = UDim2.new(0, 14, 0, 10),
+				Size            = UDim2.new(0.55, 0, 0, 20),
 				Text            = label,
+				TextWrapped     = true,
 				Font            = T.FontBold,
-				TextSize        = 15,
+				TextSize        = 14,
 				TextColor3      = T.Text,
 				TextXAlignment  = Enum.TextXAlignment.Left,
 				BackgroundTransparency = 1,
 				AnchorPoint     = Vector2.new(0, 0),
-				Position        = UDim2.new(0, 14, 0, 10),
-				Size            = UDim2.new(0.65, -14, 0, 22),
 			})
 			if desc then
 				New("TextLabel", {
@@ -546,7 +556,7 @@ function GIFui:CreateWindow(title, destroyCallback)
 				Parent          = card,
 				AnchorPoint     = Vector2.new(1, 0),
 				Position        = UDim2.new(1, -14, 0, 10),
-				Size            = UDim2.new(0, 50, 0, 22),
+				Size            = UDim2.new(0, 50, 0, 15),
 				Text            = tostring(math.ceil(val)),
 				Font            = T.FontBold,
 				TextSize        = 14,
