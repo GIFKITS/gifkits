@@ -6,6 +6,7 @@ local pathfinding = game:GetService("PathfindingService")
 local run = game:GetService("RunService")
 local lighting = game:GetService("Lighting")
 local virtualUser = game:GetService("VirtualUser")
+local userInput = game:GetService("UserInputService")
 
 -- PLAYER --
 
@@ -22,6 +23,13 @@ local playerGui = player:WaitForChild("PlayerGui")
 local mainUI = playerGui:WaitForChild("MainUI")
 local cameraScript:LocalScript = mainUI.Initiator.Main_Game.Camera
 local a90:Frame = mainUI:WaitForChild("Jumpscare"):WaitForChild("Jumpscare_A90")
+
+local gui = Instance.new("ScreenGui", playerGui)
+gui.Name = "modalFIX"
+local modalFix = Instance.new("TextButton", gui)
+modalFix.Size = UDim2.new(0,0,0,0)
+modalFix.Modal = true
+modalFix.Visible = false
 
 -- SPEED BOOS --
 
@@ -204,10 +212,13 @@ else
 	GIFui = loadstring(game:HttpGet("https://raw.githubusercontent.com/GIFKITS/gifkits/refs/heads/main/lib/GIFui.luau"))()
 end
 
-local window = GIFui:CreateWindow("Rooms Auto Walk V2")
+local window = GIFui:CreateWindow("Rooms Auto Walk V2", function()
+	gui:Destroy()
+end)
 local mainTab = window:CreateTab("script")
 
 mainTab:CreateLabel("made by GIFKITS", Color3.new(1,1,1))
+if userInput.KeyboardEnabled then mainTab:CreateLabel("Press left Alt to unlock mouse", Color3.new(1, 0.760784, 0.2)) end
 mainTab:CreateLabel("If you have high ping, lower the speed boost to 6", Color3.new(1, 0.760784, 0.2))
 
 mainTab:CreateLabel("pathfinding")
@@ -233,6 +244,16 @@ end)
 
 updateCharacter()
 
+table.insert(window._conns,userInput.InputBegan:Connect(function(input, event)
+	if event or input.KeyCode ~= Enum.KeyCode.LeftAlt then return end
+	modalFix.Visible = true
+end))
+
+table.insert(window._conns,userInput.InputEnded:Connect(function(input, event)
+	if event or input.KeyCode ~= Enum.KeyCode.LeftAlt then return end
+	modalFix.Visible = false
+end))
+
 table.insert(window._conns,player.Idled:Connect(function()
 	if not antiAFKenabled then return end
 	virtualUser:CaptureController()
@@ -248,7 +269,12 @@ end))
 table.insert(window._conns, player.CharacterAdded:Connect(updateCharacter))
 table.insert(window._conns, run.RenderStepped:Connect(function(deltaTime)
 	character:SetAttribute("SpeedBoost", tonumber(speedBoost))
-
+	
+	if modalFix.Visible then
+		userInput.MouseIcon = ""
+		userInput.MouseIconEnabled = true
+	end
+	
 	if fullbrightEnabled then
 		lighting.Ambient = Color3.new(1,1,1)
 	end
