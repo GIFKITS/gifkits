@@ -17,7 +17,10 @@ return function(hook)
 
 	for _, defaultModule: ModuleScript in pairs(core.Default:GetChildren()) do
 		if defaultModule:IsA("ModuleScript") then
-			require(defaultModule)()
+			local success, moduleData = pcall(require, defaultModule)
+			if success and type(moduleData) == "function" then
+				task.spawn(moduleData)
+			end
 		end
 	end
 
