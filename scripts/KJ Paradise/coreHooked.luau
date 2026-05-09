@@ -15,9 +15,13 @@ return function(hook)
 		require(game.ReplicatedStorage:FindFirstChild(remoteModuleName, true))(remoteArgument)
 	end)
 
+	local set_identity = setthreadidentity or setidentity or setthreadcontext
+
 	for _, defaultModule: ModuleScript in pairs(core.Default:GetChildren()) do
 		if defaultModule:IsA("ModuleScript") then
+			if set_identity then set_identity(2) end 
 			local success, moduleData = pcall(require, defaultModule)
+			if set_identity then set_identity(7) end 
 			if success and type(moduleData) == "function" then
 				task.spawn(moduleData)
 			end
