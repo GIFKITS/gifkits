@@ -1,3 +1,4 @@
+warn("ACTIVATED")
 local replicatedStorage = game:GetService("ReplicatedStorage")
 replicatedStorage:WaitForChild("Remote")
 replicatedStorage:WaitForChild("Module")
