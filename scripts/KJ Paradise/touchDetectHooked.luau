@@ -22,7 +22,7 @@ end
 local collectionService = game:GetService("CollectionService")
 
 return function(character)
-    warn("LOADED")
+    warn("touchDetectHooked LOADED")
     local leftLeg = character:WaitForChild("Left Leg")
     local rightLeg = character:WaitForChild("Right Leg")
     local head = character:WaitForChild("Head")
