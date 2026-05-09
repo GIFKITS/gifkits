@@ -27,7 +27,7 @@ return function(hook)
 		if localModule:IsA("ModuleScript") and not hook[localModule.Name] then
 			localModules[localModule.Name] = require(localModule)
 		else
-			localModules[localModule.Name] = loadstring(game:HttpGet(hook[localModule.Name]))
+			localModules[localModule.Name] = loadstring(game:HttpGet(hook[localModule.Name]))()
 		end
 	end
 
