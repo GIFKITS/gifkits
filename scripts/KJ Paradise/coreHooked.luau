@@ -10,14 +10,12 @@ local localPlayer = game:GetService("Players").LocalPlayer
 local playerScripts = localPlayer:WaitForChild("PlayerScripts")
 local core = playerScripts:WaitForChild("Core")
 
-local script = core
-
 return function(hook)
 	game.ReplicatedStorage.Remote.ClientRemoteEvent.OnClientEvent:Connect(function(remoteModuleName, remoteArgument) -- Line 17
 		require(game.ReplicatedStorage:FindFirstChild(remoteModuleName, true))(remoteArgument)
 	end)
 
-	for _, defaultModule: ModuleScript in pairs(script.Default:GetChildren()) do
+	for _, defaultModule: ModuleScript in pairs(core.Default:GetChildren()) do
 		if defaultModule:IsA("ModuleScript") then
 			require(defaultModule)()
 		end
@@ -25,7 +23,7 @@ return function(hook)
 
 	local localModules = {}
 
-	for _, localModule in pairs(script.Local:GetChildren()) do
+	for _, localModule in pairs(core.Local:GetChildren()) do
 		if localModule:IsA("ModuleScript") and not hook[localModule.Name] then
 			localModules[localModule.Name] = require(localModule)
 		else
