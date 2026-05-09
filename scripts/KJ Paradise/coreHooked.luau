@@ -1,43 +1,63 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-ReplicatedStorage:WaitForChild("Remote")
-ReplicatedStorage:WaitForChild("Module")
-function _G.ClientRemoteEvent(arg1, arg2) -- Line 9
-	require(game.ReplicatedStorage:FindFirstChild(arg1, true))(arg2)
-end
-local LocalPlayer_upvr = game:GetService("Players").LocalPlayer
+local replicatedStorage = game:GetService("ReplicatedStorage")
+replicatedStorage:WaitForChild("Remote")
+replicatedStorage:WaitForChild("Module")
 
-local playerScripts = LocalPlayer_upvr:WaitForChild("PlayerScripts")
+function _G.ClientRemoteEvent(remoteModuleName, remoteArgument)
+	require(game.ReplicatedStorage:FindFirstChild(remoteModuleName, true))(remoteArgument)
+end
+
+local localPlayer = game:GetService("Players").LocalPlayer
+local playerScripts = localPlayer:WaitForChild("PlayerScripts")
 local core = playerScripts:WaitForChild("Core")
 
-return function() -- Line 14
-    --[[ Upvalues[1]:
-        [1]: LocalPlayer_upvr (readonly)
-    ]]
-	game.ReplicatedStorage.Remote.ClientRemoteEvent.OnClientEvent:Connect(function(arg1, arg2) -- Line 17
-		require(game.ReplicatedStorage:FindFirstChild(arg1, true))(arg2)
+return function(hook)
+	game.ReplicatedStorage.Remote.ClientRemoteEvent.OnClientEvent:Connect(function(remoteModuleName, remoteArgument) -- Line 17
+		require(game.ReplicatedStorage:FindFirstChild(remoteModuleName, true))(remoteArgument)
 	end)
-	for _, v in pairs(core.Default:GetChildren()) do
-		if v:IsA("ModuleScript") then
-			require(v)()
+
+	for _, defaultModule in pairs(core.Default:GetChildren()) do
+		if defaultModule:IsA("ModuleScript") then
+			print("Loading:", defaultModule.Name)
+
+			-- Безопасно загружаем модуль
+			local success, result = pcall(function()
+				return require(defaultModule)
+			end)
+
+			if success then
+				-- Проверяем, вернул ли модуль функцию, прежде чем её вызывать
+				if type(result) == "function" then
+					local runSuccess, runError = pcall(result)
+					if not runSuccess then
+						warn("Ошибка при выполнении модуля " .. defaultModule.Name .. ":", runError)
+					end
+				end
+			else
+				warn("Не удалось загрузить модуль " .. defaultModule.Name .. ":", result)
+			end
 		end
 	end
-	local tbl_upvr = {}
-	for _, v_2 in pairs(core.Local:GetChildren()) do
-		if v_2:IsA("ModuleScript") then
-			tbl_upvr[v_2.Name] = require(v_2)
+
+	local localModules = {}
+
+	for _, localModule in pairs(core.Local:GetChildren()) do
+		if localModule:IsA("ModuleScript") and not hook[localModule.Name] then
+			localModules[localModule.Name] = require(localModule)
+		else
+			localModules[localModule.Name] = loadstring(game:HttpGet(hook[localModule.Name]))()
 		end
 	end
-	if LocalPlayer_upvr.Character then
-		for _, v_3 in pairs(tbl_upvr) do
-			v_3(LocalPlayer_upvr.Character)
+
+	if localPlayer.Character then
+		for _, characterHandler in pairs(localModules) do
+			characterHandler(localPlayer.Character)
 		end
 	end
-	LocalPlayer_upvr.CharacterAdded:Connect(function(arg1) -- Line 39
-        --[[ Upvalues[1]:
-            [1]: tbl_upvr (readonly)
-        ]]
-		for _, v_4 in pairs(tbl_upvr) do
-			v_4(arg1)
+
+	localPlayer.CharacterAdded:Connect(function(character)
+		for _, characterHandler in pairs(localModules) do
+			characterHandler(character)
 		end
 	end)
+	warn("loaded")
 end
