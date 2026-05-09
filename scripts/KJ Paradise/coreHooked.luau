@@ -7,6 +7,10 @@ function _G.ClientRemoteEvent(remoteModuleName, remoteArgument)
 end
 
 local localPlayer = game:GetService("Players").LocalPlayer
+local playerScripts = localPlayer:WaitForChild("PlayerScripts")
+local core = playerScripts:WaitForChild("Core")
+
+local script = core
 
 return function(hook)
 	game.ReplicatedStorage.Remote.ClientRemoteEvent.OnClientEvent:Connect(function(remoteModuleName, remoteArgument) -- Line 17
@@ -34,10 +38,11 @@ return function(hook)
 			characterHandler(localPlayer.Character)
 		end
 	end
-	
+
 	localPlayer.CharacterAdded:Connect(function(character)
 		for _, characterHandler in pairs(localModules) do
 			characterHandler(character)
 		end
 	end)
+	warn("loaded")
 end
