@@ -42,7 +42,7 @@ function module.update(character)
 	local torso = character:WaitForChild("Torso")
 	
 	for _,infectPart in pairs(transformBrickFolder:GetDescendants()) do
-		if not infectPart:IsA("BasePart") or module.ignoreList[infectPart] then return end
+		if not infectPart:IsA("BasePart") or module.ignoreList[infectPart] then continue end
 		module.ignoreList[infectPart] = true
 	end
 	
