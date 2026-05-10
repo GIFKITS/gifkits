@@ -29,7 +29,7 @@ local function castInBound(parts)
 	return touchedParts
 end
 
-function module.hook(character)
+function module.update(character)
 	module.remove()
 	
 	warn("touchDetectHooked LOADED")
