@@ -1,3 +1,5 @@
+warn("script is deprecated")
+return
 -- SERVICES --
 
 local players = game:GetService("Players")
